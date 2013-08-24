@@ -1,0 +1,16 @@
+{
+  "name": "amplify",
+  "version": "0.0.1",
+  "author": "Jonathan Chapman <chafnan@gmail.com>",
+  "description": "",
+  "scripts": {
+  },
+  "main": "./lib/amplify",
+  "dependencies": {
+  },
+  "devDependencies": {
+    "mocha": "*",
+    "chai": "*"
+  },
+  "license": "MIT"
+}
