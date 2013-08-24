@@ -4,13 +4,15 @@
   "author": "Jonathan Chapman <chafnan@gmail.com>",
   "description": "",
   "scripts": {
+    "test": "mocha -u bdd --compilers coffee:coffee-script --reporter spec"
   },
   "main": "./lib/amplify",
   "dependencies": {
   },
   "devDependencies": {
-    "mocha": "*",
-    "chai": "*"
+    "chai": "*",
+    "coffee-script": "*",
+    "mocha": "*"
   },
   "license": "MIT"
 }
