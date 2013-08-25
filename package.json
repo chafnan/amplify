@@ -12,7 +12,8 @@
   "devDependencies": {
     "chai": "*",
     "coffee-script": "*",
-    "mocha": "*"
+    "mocha": "*",
+    "restify": "*"
   },
   "license": "MIT"
 }
