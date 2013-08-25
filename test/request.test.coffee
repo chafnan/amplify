@@ -1,5 +1,11 @@
+request = require '../src/request'
+
+chai = require 'chai'
+should = chai.should()
+
 describe 'Request', ->
   it 'should define a resource'
+
   it 'should use a resource to make a request'
   it 'should work with request parameters'
   it 'should work with request settings'
