@@ -18,6 +18,8 @@ target/
 # NodeJS
 node_modules/
 
-logs/
-dist/
-build/
+# Build
+Cakefile
+.travis.yml
+
+src/

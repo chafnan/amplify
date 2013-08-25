@@ -6,7 +6,7 @@
   "scripts": {
     "test": "mocha -u bdd --compilers coffee:coffee-script --reporter spec"
   },
-  "main": "./lib/amplify",
+  "main": "./lib//amplify/amplify",
   "dependencies": {
   },
   "devDependencies": {
