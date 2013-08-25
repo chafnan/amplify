@@ -1,7 +1,10 @@
 {
   "name": "amplify",
-  "version": "0.0.2",
-  "author": "Jonathan Chapman <chafnan@gmail.com>",
+  "version": "0.0.3",
+  "author": {
+    "name": "Jonathan Chapman",
+    "email": "chafnan@gmail.com"
+  },
   "description": "Amplify is a wrapper around the NodeJS http packages to help make development easier.",
   "scripts": {
     "test": "mocha -u bdd --compilers coffee:coffee-script --reporter spec"
