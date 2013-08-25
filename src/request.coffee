@@ -3,48 +3,9 @@ https = require 'https'
 url = require 'url'
 utils = require './utils'
 
-@settings
-@resource
+replacePathTemplates = (pathname, data) ->
+  return unless data?
 
-resources = {}
-
-isSecure = (protocol) ->
-  protocol is 'https'
-
-onSuccess = (data) ->
-  data = JSON.parse(data) if @resource.settings.dataType is 'json'
-  @settings.success data, 'success' if @settings.success?
-
-onError = (error) ->
-  @settings.error error, 'error' if @settings.error?
-
-writeData = (req) ->
-  req.write @settings.data if not @settings.data? and @settings.data isnt {} and @settings.data isnt undefined
-
-requestFunction = (res) ->
-  data = ''
-  res.on 'data', (chunk) ->
-    data += chunk
-  res.on 'end', ->
-    onSuccess data
-  res.on 'error', (err) ->
-    onError err
-
-callRequest = (options, isSecure) ->
-  req = null
-
-  if isSecure
-    req = https.request options, requestFunction
-  else
-    req = http.request options, requestFunction
-
-  req.on 'error', (err) ->
-    onError err
-
-  writeData req
-  req.end()
-
-replacePathTemplates = (pathname) ->
   path = pathname
   matches = path.match /{[\w\d]*}/g
 
@@ -53,40 +14,89 @@ replacePathTemplates = (pathname) ->
 
   for match in matches
     prop = match.replace('{','').replace('}','')
-    replaceValue = @settings?.data[prop]
+    replaceValue = data[prop]
     path = path.replace(match, replaceValue) if replaceValue?
 
   return path
 
 request = (resourceId, data, callback) ->
-  @settings = resourceId || {}
+  settings = resourceId || {}
 
   if utils.isType resourceId, 'string'
     if utils.isType data, 'function'
       callback = data
       data = {}
-    @settings =
+    settings =
       resourceId: resourceId
       data: data || {}
       success: callback
 
-  @resource = resources[@settings.resourceId]
-  throw "unknown resourceId: #{@settings.resourceId}" if not @resource?
+  resource = resources[settings.resourceId]
+  throw "unknown resourceId: #{settings.resourceId}" unless resource?
 
-  urlParts = url.parse @resource.settings.url
+  resource.settings.data = settings.data || {}
+  resource.settings.success = settings.success
+  resource.settings.error = settings?.error
 
-  options =
-    hostname: urlParts.hostname
-    port: urlParts.port
-    path: replacePathTemplates(urlParts.pathname)
-    method: @resource.settings.type
+  types[resource.type](resource.settings)
 
-  callRequest options, isSecure(urlParts)
+exports.request = request
 
 define = (resourceId, type, settings) ->
+  throw 'resourceId is required' unless resourceId?
+  throw 'type is required' unless type?
+  throw 'type is not defined' unless   types[type]?
+
   resources[resourceId] =
     type: type
     settings: settings
 
-exports.request = request
 exports.request.define = define
+
+resources = {}
+exports.request.resources = resources
+
+types = []
+exports.request.types = types
+
+types.ajax = (settings) ->
+
+  # Set Defaults
+  settings.type ?= 'GET'
+
+  # Split the url into parts
+  urlParts = url.parse settings.url
+
+  options =
+    hostname: urlParts.hostname
+    port: urlParts.port
+    path: replacePathTemplates(urlParts.pathname, settings.data)
+    method: settings.type
+    headers:
+      'content-type': if settings.dataType is 'json' then 'application/json' else 'text/xml'
+
+  data = ''
+  req = null
+
+  requestFunction = (res) ->
+
+    res.on 'data', (chunk) ->
+      data += chunk
+    res.on 'end', ->
+      data = JSON.parse(data) if settings.dataType is 'json' and data isnt ''
+      settings.success data, 'success' if settings.success?
+    res.on 'error', (err) ->
+      settings.error err, 'error' if settings.error?
+
+  req =
+      if urlParts.protocol is 'https'
+        https.request options, requestFunction
+      else
+        http.request options, requestFunction
+
+  req.on 'error', (err) ->
+    settings.error err, 'error' if settings.error?
+
+  req.write JSON.stringify(settings.data) if options.method is 'POST' or options.method is 'PUT'
+
+  req.end()

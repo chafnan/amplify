@@ -12,8 +12,15 @@ getType = (obj) ->
     '[object Object]': 'object'
   return classToType[Object.prototype.toString.call(obj)]
 
+exports.getType = getType
+
 isType = (obj, type) ->
   getType(obj) is type
 
-exports.getType = getType
 exports.isType = isType
+
+isEmptyObject = (obj) ->
+  return false for name of obj
+  return true
+
+exports.isEmptyObject = isEmptyObject

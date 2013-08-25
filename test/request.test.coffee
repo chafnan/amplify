@@ -8,83 +8,151 @@ should = chai.should()
 
 describe 'Request', ->
 
-  before ->
-    app.listen 3000
+  describe 'request( resourceId[, data[, callback]] )', ->
 
-  it 'should define a resource', ->
-    request.define 'getProducts', 'ajax',
-      url: 'http://localhost:3000/products'
-      dataType: 'json'
-      type: 'GET'
-    # No error is good enough to pass here
-
-  it 'should define a resource with a substitution URL', ->
-    request.define 'getProduct', 'ajax',
-      url: 'http://localhost:3000/products/{id}'
-      dataType: 'json'
-      type: 'GET'
-    # No error is good enough to pass here
-
-  it 'should work with request parameters', (done) ->
-    request 'getProducts', (data) ->
-      should.exist data
-      done()
-
-  it 'should work with request settings', (done) ->
-    request
-      resourceId: 'getProducts'
-      success: (data) ->
-        should.exist data
-        done()
-
-  it 'should return JSON when the dataTyee is set to \'json\'', (done) ->
-    request
-      resourceId: 'getProducts'
-      success: (data) ->
-        utils.getType(data).should.be.equal 'object'
-        done()
-
-
-  it 'should work with request url substitution', (done) ->
-    expected = '11223344'
-
-    request
-      resourceId: 'getProduct'
-      data:
-        id: expected
-      success: (data) ->
-        should.exist data.id, 'product.id'
-        data.id.should.equal expected
-        done()
-
-
-  it 'should throw unknown resource if resourceId is not found', ->
-    resourceId = 'nonExistingResource'
-    (-> request resourceId).should.throw "unknown resourceId: #{resourceId}"
-
-  describe 'Successful Request', ->
-    resultData = null
-    it 'should call the success callback function', (done) ->
-      request
-        resourceId: 'getProducts'
-        success: (data) ->
-          resultData = data
-          done()
-    it 'should return data to the success callback', ->
-      should.exist resultData
-
-  describe 'Error Request', ->
-    resultError = null
-    it 'should call the error callback function', (done) ->
-      request.define 'getProductsError', 'ajax',
-        url: 'http://localhost:300r/error'
+    describe 'define( resourceId, type[, settings] )', ->
+      expectedResourceId = 'testResource'
+      expectedType = 'ajax'
+      expectedSettings =
+        url: '/testDefine'
         dataType: 'json'
         type: 'GET'
 
-      request
-        resourceId: 'getProductsError'
-        error: (error) ->
-          resultError = error
+      it 'should add resource', ->
+        request.define expectedResourceId, expectedType, expectedSettings
+
+        resource = request.resources[expectedResourceId]
+
+        should.exist resource
+        resource.type.should.be.equal expectedType
+        resource.settings.should.be.equal expectedSettings
+
+      it 'should throw an error if resourceId parameter not defined', ->
+        (-> request.define null, expectedType, expectedSettings).should.throw 'resourceId is required'
+
+      it 'should throw an error if type parameter is not defined', ->
+        (-> request.define expectedResourceId, null, expectedSettings).should.throw 'type is required'
+
+      it 'should throw an error if the type function is not defined', ->
+        (-> request.define expectedResourceId, 'fakeType', expectedSettings).should.throw 'type is not defined'
+
+    describe 'Success Calls', ->
+      before ->
+        request.define 'getProducts', 'ajax',
+          url: 'http://localhost:3000/products'
+          dataType: 'json'
+          type: 'GET'
+
+        request.define 'headProducts', 'ajax',
+          url: 'http://localhost:3000/products'
+          dataType: 'json'
+          type: 'HEAD'
+
+        request.define 'getProduct', 'ajax',
+          url: 'http://localhost:3000/products/{id}'
+          dataType: 'json'
+          type: 'GET'
+
+        request.define 'postProduct', 'ajax',
+          url: 'http://localhost:3000/products'
+          dataType: 'json'
+          type: 'POST'
+
+        request.define 'postProductXml', 'ajax',
+          url: 'http://localhost:3000/products'
+          dataType: 'xml'
+          type: 'POST'
+
+        request.define 'putProduct', 'ajax',
+          url: 'http://localhost:3000/products/{id}'
+          dataType: 'json'
+          type: 'PUT'
+
+        request.define 'deleteProduct', 'ajax',
+          url: 'http://localhost:3000/products/{id}'
+          dataType: 'json'
+          type: 'DELETE'
+
+        app.listen 3000
+
+      it 'should GET using parameters', (done) ->
+        request 'getProducts', (data, status) ->
+          status.should.be.equal 'success'
+          should.exist data
           done()
-    it 'should return the error to the callback', ->
-      should.exist resultError
+
+      it 'should get using settings', (done) ->
+        request
+          resourceId: 'getProducts'
+          success: (data, status) ->
+            status.should.be.equal 'success'
+            should.exist data
+            done()
+
+      it 'should GET a single resource', (done) ->
+        expectedId = '123456789'
+
+        request
+          resourceId: 'getProduct'
+          data:
+            id: expectedId
+          success: (data, status) ->
+            status.should.be.equal 'success'
+            data.id.should.be.equal expectedId
+            done()
+
+      it 'should POST content type of XML'
+
+      it 'should POST content type of JSON', (done) ->
+        expectedId = 'postId'
+        expectedName = 'postName'
+        expectedDescription = 'postDescription'
+
+        request
+          resourceId: 'postProduct'
+          data:
+            id: expectedId
+            name: expectedName
+            description: expectedDescription
+          success: (data, status) ->
+            status.should.be.equal 'success'
+            data.id.should.be.equal expectedId
+            data.name.should.be.equal expectedName
+            data.description.should.be.equal expectedDescription
+            done()
+
+      it 'should PUT', (done) ->
+        expectedId = 'putId'
+        expectedName = 'putName'
+        expectedDescription = 'putDescription'
+
+        request
+          resourceId: 'putProduct'
+          data:
+            id: expectedId
+            name: expectedName
+            description: expectedDescription
+          success: (data, status) ->
+            status.should.be.equal 'success'
+            data.id.should.be.equal expectedId
+            data.name.should.be.equal expectedName
+            data.description.should.be.equal expectedDescription
+            done()
+
+      it 'should DELETE', (done) ->
+        request
+          resourceId: 'deleteProduct'
+          data:
+            id: 'deleteId'
+          success: (data, status) ->
+            status.should.be.equal 'success'
+            should.exist data
+            done()
+
+
+      it 'should HEAD', (done) ->
+        request
+          resourceId: 'headProducts'
+          success: (data, status) ->
+            status.should.be.equal 'success'
+            done()
