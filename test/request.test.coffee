@@ -11,9 +11,9 @@ describe 'Request', ->
   before ->
     app.listen 3000
 
-  describe 'request( resourceId[, data[, callback]] )', ->
+  describe 'request( resourceId, [hash data], [function callback]] )', ->
 
-    describe 'define( resourceId, type[, settings] )', ->
+    describe 'define( string resourceId, [string type], [hash settings] )', ->
       expectedResourceId = 'testResource'
       expectedType = 'ajax'
       expectedSettings =
