@@ -7,7 +7,7 @@
   },
   "description": "Amplify is a wrapper around the NodeJS http packages to help make development easier.",
   "scripts": {
-    "test": "mocha -u bdd --compilers coffee:coffee-script --reporter spec"
+    "test": "mocha"
   },
   "main": "./lib//amplify/amplify",
   "dependencies": {
