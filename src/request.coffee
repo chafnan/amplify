@@ -45,7 +45,7 @@ exports.request = request
 define = (resourceId, type, settings) ->
   throw 'resourceId is required' unless resourceId?
   throw 'type is required' unless type?
-  throw 'type is not defined' unless   types[type]?
+  throw 'type is not defined' unless types[type]? || utils.isType(type, 'function')
 
   resources[resourceId] =
     type: type

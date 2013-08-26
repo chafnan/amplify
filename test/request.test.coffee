@@ -13,7 +13,7 @@ describe 'Request', ->
 
   describe 'request( resourceId, [hash data], [function callback]] )', ->
 
-    describe 'define( string resourceId, [string type], [hash settings] )', ->
+    describe 'define( string resourceId, [string|function type], [hash settings] )', ->
       expectedResourceId = 'testResource'
       expectedType = 'ajax'
       expectedSettings =
@@ -38,6 +38,18 @@ describe 'Request', ->
 
       it 'should throw an error if the type function is not defined', ->
         (-> request.define expectedResourceId, 'fakeType', expectedSettings).should.throw 'type is not defined'
+
+      it 'should use the type function that is passed', ->
+        expectedTypeFunction = (settings) ->
+          settings.success
+            working: true
+
+        request.define expectedResourceId, expectedTypeFunction
+
+        resource = request.resources[expectedResourceId]
+
+        should.exist resource
+        resource.type.should.be.equal expectedTypeFunction
 
     describe 'Success Calls', ->
       before ->
