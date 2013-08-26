@@ -49,9 +49,9 @@ amplify.request(string resourceId, [hash data], [function callback])
 amplify.request(hash settings)
 ```
 #### Settings
-`resourceId`: The identifier of the resource
-`data`: The data to be sent
-`success`: The success callback after the request
+`resourceId`: The identifier of the resource<br>
+`data`: The data to be sent<br>
+`success`: The success callback after the request<br>
 `error`: The error callback after the request
 
 ### Define
@@ -61,6 +61,6 @@ Define will take care adding resources that can be used by the request.
 amplify.request.define(string resourceId, string type, [hash settings])
 ```
 #### Settings
-`url`: The url used for the request
-`dataType`: The content-type that is sent and received
+`url`: The url used for the request<br>
+`dataType`: The content-type that is sent and received<br>
 `type`: The HTTP method that will be used
