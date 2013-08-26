@@ -1,6 +1,6 @@
 {
   "name": "amplify",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "author": {
     "name": "Jonathan Chapman",
     "email": "chafnan@gmail.com"
@@ -10,8 +10,7 @@
     "test": "mocha"
   },
   "main": "./lib//amplify/amplify",
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "chai": "*",
     "coffee-script": "*",
