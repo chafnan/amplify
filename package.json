@@ -15,7 +15,8 @@
     "chai": "*",
     "coffee-script": "*",
     "mocha": "*",
-    "restify": "*"
+    "restify": "*",
+    "semver": "*"
   },
   "engine": {
     "node": "> 0.6"
