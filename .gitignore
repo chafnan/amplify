@@ -17,6 +17,7 @@ target/
 
 # NodeJS
 node_modules/
+npm-debug.log
 
 logs/
 dist/

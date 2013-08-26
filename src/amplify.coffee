@@ -1,4 +1,4 @@
-exports.version = '0.0.5'
+exports.VERSION = '0.0.6'
 
-request = require './request'
+{request} = require './request'
 exports.request = request
