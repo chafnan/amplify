@@ -8,6 +8,9 @@ should = chai.should()
 
 describe 'Request', ->
 
+  before ->
+    app.listen 3000
+
   describe 'request( resourceId[, data[, callback]] )', ->
 
     describe 'define( resourceId, type[, settings] )', ->
@@ -72,8 +75,6 @@ describe 'Request', ->
           url: 'http://localhost:3000/products/{id}'
           dataType: 'json'
           type: 'DELETE'
-
-        app.listen 3000
 
       it 'should GET using parameters', (done) ->
         request 'getProducts', (data, status) ->
@@ -155,4 +156,84 @@ describe 'Request', ->
           resourceId: 'headProducts'
           success: (data, status) ->
             status.should.be.equal 'success'
+            done()
+
+    describe 'Error calls', ->
+      before ->
+        request.define 'getErrors', 'ajax',
+          url: 'http://localhost:300/errors'
+          dataType: 'json'
+          type: 'GET'
+
+        request.define 'headError', 'ajax',
+          url: 'http://localhost:300/errors'
+          dataType: 'json'
+          type: 'HEAD'
+
+        request.define 'getError', 'ajax',
+          url: 'http://localhost:300/errors/{id}'
+          dataType: 'json'
+          type: 'GET'
+
+        request.define 'postError', 'ajax',
+          url: 'http://localhost:300/errors'
+          dataType: 'json'
+          type: 'POST'
+
+        request.define 'putError', 'ajax',
+          url: 'http://localhost:300/errors/{id}'
+          dataType: 'json'
+          type: 'PUT'
+
+        request.define 'deleteError', 'ajax',
+          url: 'http://localhost:300/errors/{id}'
+          dataType: 'json'
+          type: 'DELETE'
+
+      it 'should GET', (done) ->
+        request
+          resourceId: 'getErrors'
+          error: (error, status) ->
+            status.should.be.equal 'error'
+            should.exist error
+            done()
+
+      it 'should POST', (done) ->
+        request
+          resourceId: 'postError'
+          data:
+            id: 1234
+          error: (error, status) ->
+            status.should.be.equal 'error'
+            should.exist error
+            done()
+
+      it 'should PUT', (done) ->
+        request
+          resourceId: 'putError'
+          data:
+            id: 1234
+          error: (error, status) ->
+            status.should.be.equal 'error'
+            should.exist error
+            done()
+
+      it 'should DELETE', (done) ->
+        request
+          resourceId: 'deleteError'
+          data:
+            id: 1234
+          error: (error, status) ->
+            status.should.be.equal 'error'
+            should.exist error
+            done()
+
+      it 'should HEAD', (done) ->
+        request
+          resourceId: 'headError'
+          data:
+            id: 1234
+          error: (error, status) ->
+            status.should.be.equal 'error'
+            should.exist error
             done()
