@@ -39,10 +39,11 @@ describe 'Request', ->
       it 'should throw an error if the type function is not defined', ->
         (-> request.define expectedResourceId, 'fakeType', expectedSettings).should.throw 'type is not defined'
 
-      it 'should use the type function that is passed', ->
+      it 'should use the type function that is passed', (done) ->
         expectedTypeFunction = (settings) ->
           settings.success
             working: true
+          done()
 
         request.define expectedResourceId, expectedTypeFunction
 
@@ -50,6 +51,13 @@ describe 'Request', ->
 
         should.exist resource
         resource.type.should.be.equal expectedTypeFunction
+
+        request
+          resourceId: expectedResourceId
+          success: (data) ->
+            should.exist data
+            data.working.should.be.true
+
 
     describe 'Success Calls', ->
       before ->

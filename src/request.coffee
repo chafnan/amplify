@@ -38,11 +38,15 @@ request = (resourceId, data, callback) ->
   resource.settings.success = settings.success
   resource.settings.error = settings?.error
 
-  types[resource.type](resource.settings)
+  console.log
+  if utils.isType(resource.type, 'function')
+    resource.type resource.settings
+  else
+    types[resource.type](resource.settings)
 
 exports.request = request
 
-define = (resourceId, type, settings) ->
+define = (resourceId, type, settings = {}) ->
   throw 'resourceId is required' unless resourceId?
   throw 'type is required' unless type?
   throw 'type is not defined' unless types[type]? || utils.isType(type, 'function')
