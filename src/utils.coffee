@@ -16,7 +16,6 @@ exports.getType = getType
 
 isType = (obj, type) ->
   getType(obj) is type
-
 exports.isType = isType
 
 isEmptyObject = (obj) ->

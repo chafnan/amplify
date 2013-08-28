@@ -79,6 +79,10 @@ types.ajax = (settings) ->
     headers:
       'content-type': if settings.dataType is 'json' then 'application/json' else 'text/xml'
 
+  ampXHR =
+    setRequestHeader: (key, value) ->
+      options.headers[key] = value
+
   data = ''
   req = null
 
@@ -91,6 +95,8 @@ types.ajax = (settings) ->
       settings.success data, 'success' if settings.success?
     res.on 'error', (err) ->
       settings.error err, 'error' if settings.error?
+
+  settings.beforeSend? ampXHR, settings
 
   req =
       if urlParts.protocol is 'https'

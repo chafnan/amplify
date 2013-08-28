@@ -6,6 +6,8 @@ utils = require '../src/utils'
 chai = require 'chai'
 should = chai.should()
 
+ampXHR = null
+
 describe 'Request', ->
 
   before ->
@@ -13,7 +15,7 @@ describe 'Request', ->
 
   describe 'request( resourceId, [hash data], [function callback]] )', ->
 
-    describe 'define( string resourceId, [string|function type], [hash settings] )', ->
+    describe 'define( string resourceId, [string|fu nction type], [hash settings] )', ->
       expectedResourceId = 'testResource'
       expectedType = 'ajax'
       expectedSettings =
@@ -58,6 +60,24 @@ describe 'Request', ->
             should.exist data
             data.working.should.be.true
 
+      describe 'settings for type \'ajax\'', ->
+
+        describe 'beforeSend(ampXHR, settings)', ->
+          it 'should call the beforeSend before making the request', (done) ->
+            expectedSettings.beforeSend = (ampXHR, settings) ->
+              ampXHR = ampXHR
+              should.exist ampXHR
+              should.exist settings
+
+              should.exist ampXHR.setRequestHeader
+
+              done()
+
+            request.define expectedResourceId, expectedType, expectedSettings
+
+            request
+              resourceId: expectedResourceId,
+              success: (data, status) ->
 
     describe 'Success Calls', ->
       before ->
