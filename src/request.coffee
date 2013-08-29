@@ -99,7 +99,7 @@ types.ajax = (settings) ->
   settings.beforeSend? ampXHR, settings
 
   req =
-      if urlParts.protocol is 'https'
+      if urlParts.protocol is 'https:'
         https.request options, requestFunction
       else
         http.request options, requestFunction

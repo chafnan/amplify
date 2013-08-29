@@ -8,6 +8,8 @@
 ###
 
 restify = require 'restify'
+fs = require 'fs'
+path = require 'path'
 
 respond = (request, response, next) ->
   response.send

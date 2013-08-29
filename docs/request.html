@@ -101,14 +101,18 @@ utils = require <span class="string">'./utils'</span>
   resource.settings.success = settings.success
   resource.settings.error = settings?.error
 
-  types[resource.type](resource.settings)
+  console.log
+  <span class="keyword">if</span> utils.isType(resource.type, <span class="string">'function'</span>)
+    resource.type resource.settings
+  <span class="keyword">else</span>
+    types[resource.type](resource.settings)
 
 exports.request = request
 
-<span class="function"><span class="title">define</span></span> = (resourceId, type, settings) -&gt;
+<span class="function"><span class="title">define</span></span> = (resourceId, type, settings = {}) -&gt;
   <span class="keyword">throw</span> <span class="string">'resourceId is required'</span> <span class="keyword">unless</span> resourceId?
   <span class="keyword">throw</span> <span class="string">'type is required'</span> <span class="keyword">unless</span> type?
-  <span class="keyword">throw</span> <span class="string">'type is not defined'</span> <span class="keyword">unless</span>   types[type]?
+  <span class="keyword">throw</span> <span class="string">'type is not defined'</span> <span class="keyword">unless</span> types[type]? || utils.isType(type, <span class="string">'function'</span>)
 
   resources[resourceId] =
     type: type
@@ -162,6 +166,10 @@ types.<span class="function"><span class="title">ajax</span></span> = (settings)
     headers:
       <span class="string">'content-type'</span>: <span class="keyword">if</span> settings.dataType <span class="keyword">is</span> <span class="string">'json'</span> <span class="keyword">then</span> <span class="string">'application/json'</span> <span class="keyword">else</span> <span class="string">'text/xml'</span>
 
+  ampXHR =
+    setRequestHeader: (key, value) -&gt;
+      options.headers[key] = value
+
   data = <span class="string">''</span>
   req = <span class="literal">null</span>
 
@@ -175,8 +183,10 @@ types.<span class="function"><span class="title">ajax</span></span> = (settings)
     res.<span class="literal">on</span> <span class="string">'error'</span>, (err) -&gt;
       settings.error err, <span class="string">'error'</span> <span class="keyword">if</span> settings.error?
 
+  settings.beforeSend? ampXHR, settings
+
   req =
-      <span class="keyword">if</span> urlParts.protocol <span class="keyword">is</span> <span class="string">'https'</span>
+      <span class="keyword">if</span> urlParts.protocol <span class="keyword">is</span> <span class="string">'https:'</span>
         https.request options, requestFunction
       <span class="keyword">else</span>
         http.request options, requestFunction

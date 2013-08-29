@@ -198,6 +198,27 @@ describe 'Request', ->
             status.should.be.equal 'success'
             done()
 
+      it 'should make HTTPS requests', (done) ->
+        ###
+          Issue #3:
+            The the request is returning 'ECONNREFUSED' means that
+            possibly the call went out as HTTP and not HTTPS. Testing that here.
+            The test will use the test server that does not have SSL.  This test
+            will look for a failure in the call.
+        ###
+
+        request.define 'getProductsHttps', 'ajax',
+          url: 'https://localhost:3000/products'
+          dataType: 'text'
+          type: 'GET'
+
+        request
+          resourceId: 'getProductsHttps'
+          success: (data, status) ->
+            throw 'HTTPS was not used.'
+          error: (error, status) ->
+            done()
+
     describe 'Error calls', ->
       before ->
         request.define 'getErrors', 'ajax',
