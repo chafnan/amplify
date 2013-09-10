@@ -41,4 +41,14 @@ app.del '/products/:id', (req, res, next) ->
   res.send 200
   next()
 
+app.get '/param-test', (req, res, next) ->
+  url = require 'url'
+  parts = url.parse req.url, true
+  res.send 500 unless parts.query.test
+  res.send 200
+
+app.get '/status/:id', (req, res, next) ->
+  res.send parseInt(req.params.id, 10)
+
 exports.app = app
+#app.listen 3000

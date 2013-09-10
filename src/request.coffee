@@ -74,7 +74,7 @@ types.ajax = (settings) ->
   options =
     hostname: urlParts.hostname
     port: urlParts.port
-    path: replacePathTemplates(urlParts.pathname, settings.data)
+    path: replacePathTemplates(urlParts.path, settings.data)
     method: settings.type
     headers:
       'content-type': if settings.dataType is 'json' then 'application/json' else 'text/xml'
@@ -92,6 +92,7 @@ types.ajax = (settings) ->
       data += chunk
     res.on 'end', ->
       data = JSON.parse(data) if settings.dataType is 'json' and data isnt ''
+      return settings.error(data, 'error') if res.statusCode >= 400
       settings.success data, 'success' if settings.success?
     res.on 'error', (err) ->
       settings.error err, 'error' if settings.error?

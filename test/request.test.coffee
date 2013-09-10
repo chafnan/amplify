@@ -60,6 +60,45 @@ describe 'Request', ->
             should.exist data
             data.working.should.be.true
 
+      it 'should use the query parameters in url', (done) ->
+        request.define 'paramTest', 'ajax',
+          url: 'http://localhost:3000/param-test?test=true'
+          dataType: 'json'
+          type: 'GET'
+
+        request
+          resourceId: 'paramTest'
+          success: (data, status) ->
+            done()
+          error: (error) ->
+            throw error
+
+      it 'should return error on any http status less then 400', (done) ->
+        request.define 'statusTest', 'ajax',
+          url: 'http://localhost:3000/status/399'
+          dataType: 'json'
+          type: 'GET'
+
+        request
+          resourceId: 'statusTest'
+          success: ->
+            done()
+          error: ->
+            throw 'success callback should be called'
+
+      it 'should return error on any http status greater than or equal to 400', (done) ->
+        request.define 'statusTest', 'ajax',
+          url: 'http://localhost:3000/status/400'
+          dataType: 'json'
+          type: 'GET'
+
+        request
+          resourceId: 'statusTest'
+          success: ->
+            throw 'error callback should be called'
+          error: ->
+            done()
+
       describe 'settings for type \'ajax\'', ->
 
         describe 'beforeSend(ampXHR, settings)', ->
